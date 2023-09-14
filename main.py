@@ -5,6 +5,7 @@ from tournament import Tournament
 import pdb
 
 def starting_menu():
+    print("*************************************************************")
     print("Welcome to our tournament management tool!")
     print("You can press '1' to create a new tournament")
     print("You can press '2' to edit the games of an existing tournament")
@@ -24,13 +25,26 @@ def starting_menu():
         exit()
 
 def tournament_setup():
-    tournament_name = input("What would you like to call your tournament? ")
+    tournament_name = input("\nWhat would you like to call your tournament? ")
     tournament = Tournament(tournament_name)
 
     participant_count = request_integer_input("How many participants will enter this tournament? ")
 
+    participants = gather_participants(participant_count)
+
+    print("\nYour tournament is ready to be scheduled. Creating calendar invites now!")
+
+    tournament.create_rounds(participants)
+    print(f'{tournament=}')
+
+    tournament.save()
+
+    starting_menu()
+
+# Must return a list of unique participants equal to the count
+def gather_participants(count):
     participant_set = set()
-    for i in range(participant_count):
+    while len(participant_set) < count:
         new_participant = input("Please enter the name of the next participant: ")
 
         while new_participant in participant_set:
@@ -38,14 +52,8 @@ def tournament_setup():
 
         participant_set.add(new_participant)
 
-    print("Your tournament is ready to be scheduled. Creating calendar invites now.")
+    return list(participant_set)
 
-    tournament.create_rounds(list(participant_set))
-    print(f'{tournament=}')
-
-    tournament.save()
-
-    starting_menu()
 
 def tournament_changes():
     tournament_name = input("What tournament would you like to modify? ")
@@ -63,12 +71,17 @@ def tournament_changes():
     for i, game in enumerate(tournament.games):
         print(f'Press - {i} to edit {game}')
 
-    game_id = request_integer_input("Please enter the id of the game you want to modify: ")
-    player_1 = input("Please enter the new player 1, or type enter not to change it ")
-    player_2 = input("Please enter the new player 2, or type enter not to change it ")
+    game_id = -1
+    while game_id < 0 or game_id >= len(tournament.games):
+        game_id = request_integer_input("Please enter the id of the game you want to modify:  ")
+
+    player_1 = input("Please enter the new player 1, or type enter not to change it: ")
+    player_2 = input("Please enter the new player 2, or type enter not to change it: ")
     # date = input("Please enter the new date for the game, or type enter not to change it ")
 
-    # print("We will update the game on eventbrite now a")
+    print("-----------------------")
+    print("Saving your changes now")
+    print("-----------------------")
 
     tournament.update_game(game_id, player_1, player_2)
 
