@@ -1,16 +1,18 @@
 import json
 
-from datetime import timedelta
-from math import ceil, log, floor
+from datetime import datetime, timedelta
 
 from game import Game
+from untested_helpers import from_datetime_to_string, power_of_two, compute_round_name
 
 class Tournament:
     def __init__(self, name, games = None):
         self.name = name
-        # self.start_date = start_date
+        self.start_date = datetime.now() + timedelta(days = 1)
 
-        self.interval = 2
+        self.interval = 2 # games every other day
+        self.game_duration = 1 #hours
+
         self.games = [] if games is None else games
 
     def create_rounds(self, participants):
@@ -32,15 +34,14 @@ class Tournament:
 
             for game_count in range(games_in_round):
                 game_name = f'{round_name} Game {game_count + 1}'
-                # game_date = self.start_date + timedelta(days = rounds_count * self.interval)
-
+                game_start, game_end = self.compute_game_time(rounds_count)
                 if rounds_count == 0:
                 # The first round is special because we know all the competitors, so we should include them in the game
                     player_1 = participants[2*game_count]
                     player_2 = participants[2*game_count + 1]
-                    self.games.append(Game(game_name, player_1, player_2))
+                    self.games.append(Game(game_name, game_start, game_end, player_1, player_2))
                 else:
-                    self.games.append(Game(game_name))
+                    self.games.append(Game(game_name, game_start, game_end))
 
             rounds_count += 1
             games_in_round  //= 2
@@ -67,36 +68,13 @@ class Tournament:
 
         return Tournament(tournament_name,games)
 
-    def update_game(self, game_id, player_1, player_2, date = None):
-        self.games[game_id].update(player_1, player_2, date)
+    def update_game(self, game_id, player_1, player_2):
+        self.games[game_id].update(player_1, player_2)
+        self.save()
 
-def power_of_two(value):
-    return (ceil(log(value, 2)) == floor(log(value, 2)))
 
-# Helper functions
-def get_rounds_for_players(player_count):
-    return int(log(player_count, 2))
+    def compute_game_time(self, round_count):
+        game_start = (self.start_date + timedelta(days = round_count * self.interval)).replace(hour = 16, minute = 0, second = 0)
+        game_end = game_start + timedelta(hours = self.game_duration)
 
-def compute_round_name(game_count):
-    input_type = type(game_count)
-    if input_type is int or input_type is float or (input_type is str and game_count.isnumeric()):
-        if int(game_count) == 1:
-            return 'Final'
-        if int(game_count) == 2:
-            return 'Semi-Finals'
-        if int(game_count) == 4:
-            return 'Quarter-Finals'
-
-        return f'Round of {game_count * 2}'
-
-    raise TypeError(f"{game_count} must be a number or a string we can convert to a number")
-
-if __name__ == '__main__':
-    participants = ['a', 'b', 'c', 'd']
-
-    t = Tournament("test tourney")
-    t.create_rounds(participants)
-
-    print(t)
-
-    print(t.to_json_string())
+        return from_datetime_to_string(game_start), from_datetime_to_string(game_end)

@@ -1,15 +1,13 @@
-import math
-
+import sys
 from tournament import Tournament
-
-import pdb
+from scheduler import schedule_tournament, update_game_event
 
 def starting_menu():
     print("*************************************************************")
     print("Welcome to our tournament management tool!")
     print("You can press '1' to create a new tournament")
     print("You can press '2' to edit the games of an existing tournament")
-    print("You can press 'q' to quit")
+    print("You can press any other key to exit\n")
 
     operation = input("What would you like to do? ")
 
@@ -17,12 +15,9 @@ def starting_menu():
         tournament_setup()
     elif operation == '2':
         tournament_changes()
-    elif operation == 'q':
-        print("Thanks for usin our tool! exiting now...")
-        exit()
     else:
-        print("Unknown command, exiting now...")
-        exit()
+        print("Thanks for using our tool! exiting now...")
+        sys.exit()
 
 def tournament_setup():
     tournament_name = input("\nWhat would you like to call your tournament? ")
@@ -37,23 +32,11 @@ def tournament_setup():
     tournament.create_rounds(participants)
     print(f'{tournament=}')
 
+    schedule_tournament(tournament)
     tournament.save()
 
+
     starting_menu()
-
-# Must return a list of unique participants equal to the count
-def gather_participants(count):
-    participant_set = set()
-    while len(participant_set) < count:
-        new_participant = input("Please enter the name of the next participant: ")
-
-        while new_participant in participant_set:
-            new_participant = input("We already have registered this participant! please share a new name: ")
-
-        participant_set.add(new_participant)
-
-    return list(participant_set)
-
 
 def tournament_changes():
     tournament_name = input("What tournament would you like to modify? ")
@@ -73,11 +56,10 @@ def tournament_changes():
 
     game_id = -1
     while game_id < 0 or game_id >= len(tournament.games):
-        game_id = request_integer_input("Please enter the id of the game you want to modify:  ")
+        game_id = request_integer_input("Which game do you want to modify?  ")
 
     player_1 = input("Please enter the new player 1, or type enter not to change it: ")
     player_2 = input("Please enter the new player 2, or type enter not to change it: ")
-    # date = input("Please enter the new date for the game, or type enter not to change it ")
 
     print("-----------------------")
     print("Saving your changes now")
@@ -85,10 +67,13 @@ def tournament_changes():
 
     tournament.update_game(game_id, player_1, player_2)
 
-    tournament.save()
+    update_game_event(tournament.games[game_id])
+
     starting_menu()
 
 
+""" Helpers:
+"""
 def request_integer_input(message):
     int_input = input(message).strip()
     while not int_input.isnumeric():
@@ -97,6 +82,18 @@ def request_integer_input(message):
 
     return int(int_input)
 
+# Must return a list of unique participants equal to the count
+def gather_participants(count):
+    participant_set = set()
+    while len(participant_set) < count:
+        new_participant = input("Please enter the name of the next participant: ")
+
+        while new_participant in participant_set:
+            new_participant = input("We already have registered this participant! please share a new name: ")
+
+        participant_set.add(new_participant)
+
+    return list(participant_set)
 
 if __name__ == '__main__':
     starting_menu()
