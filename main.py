@@ -1,6 +1,6 @@
 import sys
 from tournament import Tournament
-from scheduler import schedule_tournament, update_game_event
+from scheduler import Scheduler
 
 def starting_menu():
     print("*************************************************************")
@@ -32,7 +32,7 @@ def tournament_setup():
     tournament.create_rounds(participants)
     print(f'{tournament=}')
 
-    schedule_tournament(tournament)
+    Scheduler().schedule_tournament(tournament)
     tournament.save()
 
 
@@ -67,7 +67,7 @@ def tournament_changes():
 
     tournament.update_game(game_id, player_1, player_2)
 
-    update_game_event(tournament.games[game_id])
+    Scheduler().update_game(tournament.games[game_id])
 
     starting_menu()
 
