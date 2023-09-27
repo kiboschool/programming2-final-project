@@ -5,12 +5,12 @@ from tournament import Tournament
 from game import Game
 from main import request_participant_count, request_participants
 
-class TestTournamentCLI(unittest.TestCase):
-    def test_request_participant_count(self):
-        pass
+# class TestTournamentCLI(unittest.TestCase):
+#     def test_request_participant_count(self):
+#         pass
 
-    def test_request_participants(self):
-        pass
+#     def test_request_participants(self):
+#         pass
 
 class TestGame(unittest.TestCase):
     # Milestone 3
@@ -49,7 +49,8 @@ class TestTournament(unittest.TestCase):
             assert test_game_two.to_json_string() in args_set
             assert '\n' in args_set
 
-    def load_tournament(self):
+    # Milestone 2
+    def test_load_tournament(self):
         test_game = Game("test", "start_time", "end_time", "Team A", "Team B")
         test_game_two = Game("test", "start_time", "end_time", "unknown", "unknown")
 
