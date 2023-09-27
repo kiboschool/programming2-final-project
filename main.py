@@ -1,6 +1,7 @@
 import sys
 from tournament import Tournament
 from scheduler import Scheduler
+from untested_helpers import power_of_two
 
 def starting_menu():
     print("*************************************************************")
@@ -23,9 +24,9 @@ def tournament_setup():
     tournament_name = input("\nWhat would you like to call your tournament? ")
     tournament = Tournament(tournament_name)
 
-    participant_count = request_integer_input("How many participants will enter this tournament? ")
+    participant_count = request_participant_count("How many participants will enter this tournament? Make sure it's a power of two ")
 
-    participants = gather_participants(participant_count)
+    participants = request_participants(participant_count)
 
     print("\nYour tournament is ready to be scheduled. Creating calendar invites now!")
 
@@ -82,8 +83,17 @@ def request_integer_input(message):
 
     return int(int_input)
 
+def request_participant_count(message):
+    int_input = input(message).strip()
+    while not (int_input.isnumeric() and power_of_two(int(int_input))):
+        print("Sorry, please make sure to provide a power of two")
+        int_input = input(message).strip()
+
+    return int(int_input)
+
+
 # Must return a list of unique participants equal to the count
-def gather_participants(count):
+def request_participants(count):
     participant_set = set()
     while len(participant_set) < count:
         new_participant = input("Please enter the name of the next participant: ")

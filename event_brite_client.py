@@ -105,10 +105,6 @@ class EventBriteAPIHelper:
         req.add_header('Content-Type', 'application/json')
         
         opened_request = request.urlopen(req, data=data)
-        content = opened_request.read().decode('utf-8')
-        parsed = json.loads(content)
-        return parsed.get('id')
-
 
     ########### HELPERS ###############
 
