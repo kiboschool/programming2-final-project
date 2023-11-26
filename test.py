@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import Mock, patch
 from helpers import datetime_to_eventbrite_format
+from gradescope_utils.autograder_utils.decorators import weight
 
 from tournament import Tournament
 from game import Game
@@ -15,6 +16,7 @@ from main import request_participant_count, request_participants
 
 class TestGame(unittest.TestCase):
     # Milestone 3
+    @weight(0)
     def test_game_update(self):
         test_game = Game("test", "start_time", "end_time", "unknown", "unknown")
 
@@ -32,6 +34,7 @@ class TestGame(unittest.TestCase):
 
 class TestTournament(unittest.TestCase):
     # Milestone 2
+    @weight(0)
     def test_save_tournament(self):
         test_game = Game("test", "start_time", "end_time", "Team A", "Team B")
         test_game_two = Game("test", "start_time", "end_time", "unknown", "unknown")
@@ -51,6 +54,7 @@ class TestTournament(unittest.TestCase):
             assert '\n' in args_set
 
     # Milestone 2
+    @weight(0)
     def test_load_tournament(self):
         test_game = Game("test", "start_time", "end_time", "Team A", "Team B")
         test_game_two = Game("test", "start_time", "end_time", "unknown", "unknown")
@@ -65,6 +69,7 @@ class TestTournament(unittest.TestCase):
             assert new_tournament.games[1].to_json_string() == test_game_two.to_json_string()
     
     # Milestone 3
+    @weight(0)
     def test_tournament_update(self):
         test_game = Game("test", "start_time", "end_time", "Team A", "Team B")
         test_game_two = Game("test", "start_time", "end_time", "unknown", "unknown")
@@ -82,6 +87,7 @@ class TestTournament(unittest.TestCase):
 
 class TestEvenBriteClient(unittest.TestCase):
 
+    @weight(0)
     def test_update_event(self):
         import event_brite_client
 
@@ -112,6 +118,7 @@ class TestScheduler(unittest.TestCase):
         test_game_two = Game("test", "start_time", "end_time", "unknown", "unknown")
         self.test_tournament = Tournament("test", [self.test_game, test_game_two])
 
+    @weight(0)
     def test_schedule_tournament(self):
         import scheduler
         scheduler.EventBriteAPIHelper = Mock()
@@ -121,6 +128,7 @@ class TestScheduler(unittest.TestCase):
 
         assert scheduler_object.client.create_event.call_count == len(self.test_tournament.games)
 
+    @weight(0)
     def test_update_game_event(self):
         import scheduler
         scheduler.EventBriteAPIHelper = Mock()
